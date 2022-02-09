@@ -1,24 +1,23 @@
 days:" "vs"first second third fourth fifth sixth",
   " seventh eighth ninth tenth eleventh twelfth"
 
-stanza:(
-  "On the twelfth day of Christmas";
-  "My true love gave to me:";
-  "Twelve drummers drumming";
-  "Eleven pipers piping";
-  "Ten lords a-leaping";
-  "Nine ladies dancing";
-  "Eight maids a-milking";
-  "Seven swans a-swimming";
-  "Six geese a-laying";
-  "Five golden rings";
-  "Four calling birds";
-  "Three french hens";
+gifts:(
+  "A partridge in a pear tree.";
   "Two turtle doves";
-  "And a partridge in a pear tree.";
-  "")
+  "Three french hens";
+  "Four calling birds";
+  "Five golden rings";
+  "Six geese a-laying";
+  "Seven swans a-swimming";
+  "Eight maids a-milking";
+  "Nine ladies dancing";
+  "Ten lords a-leaping";
+  "Eleven pipers piping";
+  "Twelve drummers drumming")
 
-verses:stanza @ 0 1,/:{(reverse x)+2+til each x+2} til 12
-lyrics:verses{@[x;0;{((7#x),y,14_x)}[;y]]}'days / why must we have (7#x)?
+intro:"On the day of Christmas, my true love gave to me:"
+lyrics:{[day] enlist[{[x;y] ((7#x),days[y],6_x)}[intro;2]],"  ",/:
+    reverse (day+1)#@[gifts;0;{y,1_x};$[day;"And a";"A"]]} each til count days
+
 
 1 "\n" sv raze lyrics;
