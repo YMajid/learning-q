@@ -16,8 +16,7 @@ gifts:(
   "Twelve drummers drumming")
 
 intro:"On the day of Christmas, my true love gave to me:"
-lyrics:{[day] enlist[{[x;y] ((7#x),days[y],6_x)}[intro;2]],"  ",/:
+lyrics:{[day] enlist[{((7#x),days[y],6_x)}[intro;day]],"  ",/:
     reverse (day+1)#@[gifts;0;{y,1_x};$[day;"And a";"A"]]} each til count days
-
 
 1 "\n" sv raze lyrics;

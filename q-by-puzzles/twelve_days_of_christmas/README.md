@@ -1,5 +1,23 @@
-# Twelve Days of Christmas
+# [Twelve Days of Christmas](https://code.kx.com/q/learn/pb/xmas-days)
 Print the lyrics of the Christmas carol “The Twelve Days of Christmas”!
+
+### Solutions
+- `sol1.q` and `sol2.q` are based on the walkthrough provided in the tutorial
+- `sol3.q`
+    - The intro to the carol is defined in it's own variable, `intro`
+        - The appropriate date is placed into the intro on line 19
+    - `til count days` creates a vector of the day numbers, and `each` passes the day numbers one-by-one into the function
+        - `each` allows us to iterate through the vector produced by the unary `til`
+    - On line 19, `enlist` returns a list where the items are the arguments produced by the lambda function used to place the appropiate date into the carol intro
+        - In the lambda function, we're joining strings to generate the carol intro
+            - Takes the first 7 characters of the variable `intro`, appends the appropriate date, and finally appends the remaining characters
+    - The join over (`,/`) operator is used to join the intro with all of the gifts recieved up to that day
+    - When joining the gifts recieved:
+        - If we're on day 0, the first gift will have a prefix of 'A' otherwise 'And a' as the newest gifts should come first
+            - This is done using the amend at (`@`) and cond (`#`) operators
+        - The first `day+1` items are taken from the `gifts` list, and are then reversed so that the newest gifts are printed first
+            - `day+1` because the take operator (`#`) will return an empty list if the value passed into it is `0` and not the first item of the `gifts` list as we require
+    - `raze` flattens `lyrics` list by collapsing one level of nesting and `sv` converts the vector to a scalar by joining the list of strings by `\n`
 
 ### Questions
 - What does `vs` do?
