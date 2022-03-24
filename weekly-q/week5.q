@@ -15,13 +15,13 @@ simOrders:genOrders[5000;-314159;openTime;closeTime];
 
 emptyPeriods:{[orders]
 	/ Get the maximum exit times
-	times:update maxExitT:maxs exitT from orders;
+	t:update maxExitT:maxs exitT from orders;
 	/ Positive durations indicate that there is a gap between the max exit time and next submit time
-	times:update noOrderDuration:subT - prev maxExitT from times;
+	t:update noOrderDur:subT - prev maxExitT from t;
 	/ To account for time between market open and first submit time
-	times:update noOrderDuration:subT - openTime from times where null noOrderDuration;
+	t:update noOrderDur:subT - openTime from t where null noOrderDur;
 	/ Returning results
-	select startTime:`time$subT - noOrderDuration, periodLength:`time$noOrderDuration from times where noOrderDuration > 0
+	select startTime:`time$subT - noOrderDur, periodLength:`time$noOrderDur from t where noOrderDur > 0
   };
 
 show emptyPeriods simOrders
