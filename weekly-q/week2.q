@@ -1,4 +1,9 @@
 / 2020.01.13
+nwsdev:{[w;x]
+	n:sum w<>0;
+	wx:x - w wavg x;
+	sqrt (n%n-1)*w wavg wx*wx % w}
+
 simSlippage:{
     n:10000;
 
@@ -13,8 +18,8 @@ simSlippage:{
 perfData:simSlippage[];
 
 nwsdev:{[w;x]
-	n:sum w<>0;
-	wx:x - w wavg x;
-	sqrt (n%n-1)*w wavg wx*wx % w}
+	n:sum 0<>w;
+	xd:x-w wavg x;
+	sqrt (n%n-1)*w*xd*xd%w};
 
-exec nwsdev[notional;slippage] from perfData
+exec wsdev[notional;slippage] from perfData

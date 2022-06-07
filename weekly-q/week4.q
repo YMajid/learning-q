@@ -25,19 +25,12 @@ genTrades:{[seed;nTrades]
 
 simTrades:genTrades[-314159;10000];
 
-/ Find the open and closing times, then sum up the volume of all trades in between
-tVolume:{[trades]
-	openTime:(exec time from simTrades where saleCondition~\:`O`X)[0];
-	closeTime:(exec time from simTrades where saleCondition~\:enlist `6)[0];
-	select sum volume from simTrades where time within (openTime; closeTime)
-  };
+tVolume:{[t]
+	/ List containing the market opening and closing times
+	times:exec time from t where any each saleCondition like\: "*[O6]*";
+	/ Sum trades volume within opening and closing times (inclusive)
+	select sum volume from t where time within times
+	};
 
-tVolume simTrades
-
-/
-In the solutions, they used the like operator for string matching to get the auction times
-instead of doing it in two steps like I did. Regardless, the two solutions produce the
-same results.
-
-auctionTimes:exec time from simTrades where any each saleCondition like\: "*[O6]*";
-select sum volume from simTrades where time within auctionTimes
+show tVolume simTrades
+show exec time from simTrades where any each saleCondition like\: "*[O6]*"

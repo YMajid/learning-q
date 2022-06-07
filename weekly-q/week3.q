@@ -23,15 +23,8 @@ genOrders:{
 orders:genOrders[];
 
 aggOrder:{[s]
-	f:$[s=`BUY;max;min]; / Highest price for buy order, lowest price for sell order
+	f:$[s=`BUY;max;min];
 	select from orders where side=s,price=(f;price) fby ([] poid;wid)
-	}
+	};
 
-show raze aggOrder each `BUY`SELL;
-
-/
-fby is used to apply an aggregate to groups
-    - Here, it is used to find the max (min) price for a buy (sell) order
-	aggregated on multiple columns, poid and wid
-raze is used to collapes the levels of nesting
-	- Here, to join multiple tables into one
+show raze aggOrder each `BUY`SELL
