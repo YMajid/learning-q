@@ -13,21 +13,12 @@ openTime:`time$09:30;
 closeTime:`time$16:00;
 simOrders:genOrders[5000;-314159;openTime;closeTime];
 
-emptyPeriods:{[orders]
-	/ Get the maximum exit times
-	t:update maxExitT:maxs exitT from orders;
-	/ Positive durations indicate that there is a gap between the max exit time and next submit time
-	t:update noOrderDur:subT - prev maxExitT from t;
-	/ To account for time between market open and first submit time
-	t:update noOrderDur:subT - openTime from t where null noOrderDur;
-	/ Returning results
-	select startTime:`time$subT - noOrderDur, periodLength:`time$noOrderDur from t where noOrderDur > 0
-  };
+noOrders:{[t]
+	t:update latestExitT:maxs exitT from t;
+	t:update emptyDuration:subT-prev latestExitT from t;
+	t:update emptyDuration:subT-openTime from t where null emptyDuration;
+	select startTime:`time$subT-emptyDuration,periodLength:`time$emptyDuration
+	from t where emptyDuration>=0
+	};
 
-show emptyPeriods simOrders
-
-/
-Since times and dates are integers in q, when looking for positive periods we
-can use the condition "> 0" instead of "> 00:00:00.000".
-\
-
+show noOrders simOrders
