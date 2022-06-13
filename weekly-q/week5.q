@@ -13,12 +13,12 @@ openTime:`time$09:30;
 closeTime:`time$16:00;
 simOrders:genOrders[5000;-314159;openTime;closeTime];
 
-noOrders:{[t]
+noOrderPeriods:{[t]
 	t:update latestExitT:maxs exitT from t;
-	t:update emptyDuration:subT-prev latestExitT from t;
-	t:update emptyDuration:subT-openTime from t where null emptyDuration;
-	select startTime:`time$subT-emptyDuration,periodLength:`time$emptyDuration
-	from t where emptyDuration>=0
+	t:update noOrderDuration:subT-prev latestExitT from t;
+	t:update noOrderDuration:subT-openTime from t where null noOrderDuration;
+	select startTime:`time$subT-noOrderDuration,periodLength:`time$noOrderDuration
+	from t where noOrderDuration>=0
 	};
 
-show noOrders simOrders
+show noOrderPeriods simOrders
