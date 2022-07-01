@@ -65,3 +65,42 @@ compressString:{[x;y] x where y}; / Use binary where!
 
 compressString["foobar";100101b]
 compressString["embiggener";0011110011b]
+
+/ Given a string x and a boolean vector y, spread the characters of x to the positions of 1s in y, filling intervening characters with underscores
+expansionMansion:{[x;y] ("_",x) y*sums y}; / Insert "_" at the beginning of the string, select character to be displayed
+
+expansionMansion["fbr";100101b]
+expansionMansion["bigger";0011110011b]
+
+/ Given a string x, replace all vowels by an underscore
+replaceVowels:{[x]
+	v:"aeiouyAEIOUY";
+	?[x in v;"_";x]}; / Instead of having lower and uppercase vowels, we can use (lower x) in v
+
+replaceVowels["FLAPJACKS"]
+replaceVowels["Several normal words"]
+
+/ Given a string x, remove all the vowels entirely
+removeVowels:{[x]
+	v:"aeiouyAEIOUY";
+	x except v};
+
+removeVowels["FLAPJACKS"]
+removeVowels["Several normal words"]
+
+/ Given strings x and y, replace all words in x which are the same as y with a series of x's
+redactTitle:{[x;y] ssr[x;y;(count y)#"X"]}; / Search for pattern y in string x and replace it
+
+redactTitle["a few words in a sentence";"words"]
+redactTitle["one fish two fish";"fish"]
+redactTitle["I don't give a care";"care"]
+
+/ Given a string x, give all possible permutations
+permutations:{[x]};
+
+permutations["xyz"]
+
+/ Remove whitespace from beginning and end of strings
+removeWhitespace:{[x]};
+
+removeWhitespace["   abc def  "]
