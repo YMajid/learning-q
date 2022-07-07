@@ -101,6 +101,6 @@ permutations:{[x]};
 permutations["xyz"]
 
 / Remove whitespace from beginning and end of strings
-removeWhitespace:{[x]};
+removeWhitespace:{[x] (neg ?[reverse " "=x;0b]) _ ?[" "=x;0b]_x}; / Use ? to give us the index of the first non-space character and the last, and use _ to remove the excess whitespace
 
 removeWhitespace["   abc def  "]
