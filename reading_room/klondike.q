@@ -41,7 +41,8 @@ x    cards exposed on the tableau
 \
 deal:{[]                                    / Produces dictionary that represents the game state
 	g:()!();                                / Initialize dictionary
-	deck:-52#52;                            / 52 52's
+	deck:-52?52;                            / 52 integers [0, 52)
+	/ Columns: stock, waste, 4 foundations, 7 piles
 	g[`c]:13#enlist 0#0;                    / Representing the layout as thirteen lists
 	g[`c;TABLEAU]:(sums til 7)_ 28#deck;    / Tableau
 	g[`x]:le g[`c;TABLEAU];                 / Exposed
@@ -84,7 +85,7 @@ Sixth line:
 display:{[g]                                                                    / Display game
 	/ Stock, waste, foundations
 	top:@[;0;HC|]ES^le g[`c]STOCK,WASTE,FOUNDATION;
-	show (`$string count[g[`c;STOCK]],g[`p]),`SYM 2 7#(2#top),SP,(2_ top),7#SP;
+	show (`$string count[g[`c;STOCK]],g[`p]),'SYM 2 7#(2#top),SP,(2_ top),7#SP;
 	/ Tableau
 	show SYM {flip x[;til max ce x]} {@[x; where 0=ce x; ES,]}
 		{[g;c] g[`c;c]|HC*not g[`c;c] in g[`x]}[g] TABLEAU;
@@ -92,7 +93,7 @@ display:{[g]                                                                    
 	/ Score, possible moves
 	show "Score: ",string g[`s];
 	show $[0=count g[`pm]; "No moves possible";
-		{[g;n;f;t] SYM first each neg[n,1]#'g[`c;f,t]}[g;].'g`pm];}
+		{[g;n;f;t] SYM first each neg[n,1]#'g[`c;f,t]}[g;].'g[`pm]];}
 
 / Possible Moves
 /
@@ -105,12 +106,12 @@ There are two possible moves:
 \
 rpm:{[g]                                                  / Record possible moves
 	/ Positions of top cards
-	top:{(y,'i=1) where 0<i:ce x y}[g[`c]];
+	top:{(y,'i-1) where 0<i:ce x y}[g[`c]];
 	/ Moves cards to foundation from waste or tableau
 	fm:{[c;m]
 		cards:c ./:m[;0 1];                               / Cards to move
 		nof:SYM?`${(NUMBERS NUMBER x),'SUIT x}le c m[;2]; / Next cards on foundation
-		m where(cards=nof) or (NUMBER[cards]=1)
+		m where (cards=nof) or (NUMBER[cards]=1)
 			and SUIT[cards]=SUITS FOUNDATION?m[;2]
 		}[g[`c]] top[WASTE,TABLEAU] cross FOUNDATION;
 	/ Moves cards to tableau from waste, foundation, or tableau
@@ -122,10 +123,27 @@ rpm:{[g]                                                  / Record possible move
 			or (tgts=0N) and NUMBER[cards]=13
 		}[g[`c]] (top[WASTE,FOUNDATION],xit) cross TABLEAU;
 	/ # of cards to move
-	g[`pm]:{(ce[x y[;0]]-y[;1]),'y[;0 2]}[g`c] fm,tm;
+	g[`pm]:{(ce[x y[;0]]-y[;1]),'y[;0 2]}[g[`c]] fm,tm;
 	g}
 
 / Move and Turn
+move:{[g;y]                                 / Move y (symbol atom or pair)
+	if[not 99h~type g; '"not a game"];
+	if[not all `c`p`x`pm in key g; '"not a game"];
+	if[abs[type y]<>11; '"type"];
+	if[(type[y]>0) and 2<>count y; '"length"];
+	if[not all b:y in SYM; '"invalid card: "," "sv string y where not b];
+	/ Map cards to n,f,t
+	cards:SYM?y;
+	cl:ce g[`c];                            / Column lengths
+	f:first where cl>i:g[`c]?'first cards;  / From column
+	n:cl[f]-i[f];                           / Cards to move
+	t:$[2=count cards; first where cl>g[`c]?'cards 1;
+		$[1=NUMBER first cards; first[FOUNDATION]+SUITS?SUIT first cards; 
+		first[TABLEAU]+first where 0=ce g[`c;TABLEAU]]];
+	if[not(n,f,t) in g[`pm]; '"invalid move"];
+	move_[g;n;f;t]}
+
 move_:{[g;n;f;t]                            / Move n cards in g from g[`c;f] to g[`c;t]; move cards between columns
 	g[`c;t],:neg[n]#g[`c;f];                / Moving the cards
 	g[`c;f]:neg[n]_ g[`c;f];                / Moving the cards
@@ -136,8 +154,7 @@ move_:{[g;n;f;t]                            / Move n cards in g from g[`c;f] to 
 		f in TABLEAU; 0 10@t in FOUNDATION;
 		f in FOUNDATION; -15;
 		0];
-	rpm g
-	}
+	rpm g}
 
 turn:{[g;n]                                 / Turns TURN cards from the stock pile onto the waste pile and returns the game dictionary 
 	trn:0=count g[`c;STOCK];
