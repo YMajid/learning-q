@@ -46,7 +46,7 @@ deal:{[]                                    / Produces dictionary that represent
 	g[`c]:13#enlist 0#0;                    / Representing the layout as thirteen lists
 	g[`c;TABLEAU]:(sums til 7)_ 28#deck;    / Tableau
 	g[`x]:le g[`c;TABLEAU];                 / Exposed
-	g[`c;STOCK]:28_ deck;                   /
+	g[`c;STOCK]:28_ deck;                   / Deck without the first 28 items
 	g[`s]:0;                                / Score
 	g[`p]:0;                                / Passes
 	turn g}
@@ -103,13 +103,33 @@ On the tableau, g`x lists exposed cards
 There are two possible moves:
   1. To the foundation from the waste or the tableau, a card of the same suit and next higher value to the target and any ace may move to an empty column
   2. To the tableau from the waste, tableau or foundation, a card of different colour and one lower value to the target card, and any king may move to an empty column
+rpm:
+  - top:
+    - Unary function that finds the position of the top (last) cards in its argument columns, with no result items for empty columns
+    - 
+  - fm:
+    - Function input are the game columns, and the candidate moves to the foundation
+	  - The cross gives a list of triples: from-column, from-index and to-column
+	- Given the list of triples, the first line selects the cards to be moved
+	- For the triplet 1 2 2, c ./:m[;0 1] ~ c[1;2]
+	  - Using Apply here with an iterator highlights a founding insight of q: a list is a function of its indexes
+	- nof finds the corresponding card that could be placed on that foundation pile
+	  - Third column of m holds the indexes of the target columns for the candidate move
+	    - The first index of m[;2] is the first foundation index
+	- xit:
+	  - A list of the cards exposed in the tableau
+	- tm:
+	  - Target cards must be a different colour and the next higher value, or 0N if the move caard is an ace
+	  - Note how Apply is used to apply operators between pairs of lists:
+	    - .[-]NUMBER(tgts;cards) ~ NUMBER[tgts] - NUMBER[cards]
 \
 rpm:{[g]                                                  / Record possible moves
 	/ Positions of top cards
 	top:{(y,'i-1) where 0<i:ce x y}[g[`c]];
 	/ Moves cards to foundation from waste or tableau
 	fm:{[c;m]
-		cards:c ./:m[;0 1];                               / Cards to move
+		show top[WASTE,TABLEAU];
+		cards:c ./:m[;0 1];                               / Cards to move; scattered indexing
 		nof:SYM?`${(NUMBERS NUMBER x),'SUIT x}le c m[;2]; / Next cards on foundation
 		m where (cards=nof) or (NUMBER[cards]=1)
 			and SUIT[cards]=SUITS FOUNDATION?m[;2]
