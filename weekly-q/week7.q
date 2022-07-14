@@ -9,10 +9,10 @@ paramTbl:([]time:`time$();orderQty:`long$();limitPrice:`float$();params:());
 `paramTbl insert (11:00:52.092;1000000;0n;`StartTime`PovRate!(09:40:00.000;0.15));
 
 paramHistory:{[t]
-	params:raze exec params from t;
-	params:(key params)!(enlist each value params)[;1];
-	params1:select time,OrderQty:orderQty,LimitPrice:limitPrice from t;
-	params2:exec {x,y}[params;] each params from t;
-	params1,'params2};
+  allParams:raze exec params from t;                                / Dictionary with values of possible parameters
+  nullValues:(key allParams)!(enlist each value allParams)[;1];     / Finding proper null values for each dictionary key
+  tOne:select time, orderQty, limitPrice from t;                    / Order information
+  tTwo:exec {x,y}[nullValues;] each params from t;                  / Order parameters; place null if no parameter
+  tOne,'tTwo}                                                       / Merge tables side by side
 
 show paramHistory paramTbl
